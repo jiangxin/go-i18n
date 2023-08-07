@@ -36,6 +36,11 @@ func main() {
 	l := i18n.Setup(i18nDir, domain)
 
 	showMessage(l, userName)
+
+	for _, lang := range []string{"en_US", "fr", "zh_CN", "zh_TW"} {
+		l = i18n.GetLocale(lang)
+		showMessage(l, userName)
+	}
 }
 
 func showMessage(l *i18n.Locale, userName string) {
