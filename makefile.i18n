@@ -1,0 +1,102 @@
+FIND ?= find
+
+POT_FILE = po/$(PROGRAM).pot
+POFILES := $(wildcard po/*.po)
+MOFILES := $(patsubst po/%.po,po/build/locale/%/LC_MESSAGES/$(PROGRAM).mo,$(POFILES))
+
+all:: $(MOFILES)
+
+L10N_SOURCES := $(sort $(patsubst ./%,%,$(shell git ls-files '*.go' ':!vendor/' ':!test/' ':!Documentation/' 2>/dev/null || \
+	$(FIND) . \
+	-name .git -prune -o \
+	-name vendor -prune -o \
+	-name test -prune -o \
+	-name Documentation -prune -o \
+	-name '*.go' -print)))
+
+XGETTEXT = xgettext
+MSGINIT = msginit
+MSGMERGE = msgmerge
+MSGFMT = msgfmt
+
+ifneq ($(findstring s,$(MAKEFLAGS)),s)
+ifndef V
+	QUIET_XGETTEXT = @echo '   ' XGETTEXT $@;
+	QUIET_MSGINIT = @echo '   ' MSGINIT $@;
+	QUIET_MSGMERGE = @echo '   ' MSGMERGE $@;
+	QUIET_MSGFMT = @echo '   ' MSGFMT $@;
+	export V
+endif
+endif
+
+XGETTEXT_FLAGS = \
+	--force-po \
+	--add-comments=TRANSLATORS: \
+	--from-code=UTF-8
+XGETTEXT_FLAGS_GO = $(XGETTEXT_FLAGS) --language=C \
+	--keyword="L_" \
+	--keyword="L_D:2" \
+	--keyword="L_C:1,2c" \
+	--keyword="L_DC:2,3c" \
+	--keyword="Q_:1,2" \
+	--keyword="Q_D:2,3" \
+	--keyword="Q_C:1,2,4c" \
+	--keyword="Q_DC:2,3,5c" \
+	--keyword="N_"
+
+MSGMERGE_FLAGS = --add-location --backup=off --update
+
+.PHONY: pot
+pot: $(POT_FILE)
+
+$(POT_FILE): $(L10N_SOURCES)
+	$(QUIET_XGETTEXT)$(XGETTEXT) -o$@+ $(XGETTEXT_FLAGS_GO) $(L10N_SOURCES)
+	mv $@+ $@
+
+define check_po_file_envvar
+	$(if $(PO_FILE), \
+		$(if $(filter po/%.po,$(PO_FILE)), , \
+			$(error PO_FILE should match pattern: "po/%.po")), \
+		$(error PO_FILE is not defined))
+endef
+
+## mkdir_p_parent: lazily "mkdir -p" the path needed for a $@
+## file. Uses $(wildcard) to avoid the "mkdir -p" if it's not
+## needed.
+##
+## Is racy, but in a good way; we might redundantly (and safely)
+## "mkdir -p" when running in parallel, but won't need to exhaustively create
+## individual rules for "a" -> "prefix" -> "dir" -> "file" if given a
+## "a/prefix/dir/file". This can instead be inserted at the start of
+## the "a/prefix/dir/file" rule.
+define mkdir_p_parent_template
+$(if $(wildcard $(@D)),,$(QUIET_MKDIR_P_PARENT)$(shell mkdir -p $(@D)))
+endef
+
+po/build/locale/%/LC_MESSAGES/$(PROGRAM).mo: po/%.po
+	$(call mkdir_p_parent_template)
+	$(QUIET_MSGFMT)$(MSGFMT) -o $@ $<
+
+
+.PHONY: po-update
+po-update: $(POT_FILE)
+	$(check_po_file_envvar)
+	@if test ! -e $(PO_FILE); then \
+		echo >&2 "error: $(PO_FILE) does not exist"; \
+		echo >&2 'To create an initial po file, use: "make po-init PO_FILE=po/XX.po"'; \
+		exit 1; \
+	fi
+	$(QUIET_MSGMERGE)$(MSGMERGE) $(MSGMERGE_FLAGS) $(PO_FILE) $(POT_FILE)
+
+.PHONY: po-init
+po-init: $(POT_FILE)
+	$(check_po_file_envvar)
+	@if test -e $(PO_FILE); then \
+		echo >&2 "error: $(PO_FILE) exists already"; \
+		exit 1; \
+	fi
+	$(QUIET_MSGINIT)msginit \
+		--input=$< \
+		--output=$(PO_FILE) \
+		--no-translator \
+		--locale=$(PO_FILE:po/%.po=%)

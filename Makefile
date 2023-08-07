@@ -1,5 +1,8 @@
 PROGRAM = go-i18n
 
+# Include wrappers for gettext utils
+include makefile.i18n
+
 FIND ?= find
 
 GO_SOURCES := $(sort $(patsubst ./%,%,$(shell git ls-files '*.go' ':!vendor/' ':!test/' ':!Documentation/' 2>/dev/null || \
