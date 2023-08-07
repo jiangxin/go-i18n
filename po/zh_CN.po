@@ -1,0 +1,44 @@
+# Chinese translations for go-i package
+# go-i 软件包的简体中文翻译.
+# Copyright (C) 2023 THE go-i'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the go-i package.
+# Automatically generated, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: go-i18n\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-07 23:10+0800\n"
+"PO-Revision-Date: 2023-08-07 23:10+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: main.go:43
+#, c-format
+msgid "Show messages for lang: %s\n"
+msgstr ""
+
+#: main.go:48
+msgid "Hello, world.\n"
+msgstr ""
+
+#: main.go:52
+msgid "guest"
+msgstr ""
+
+#: main.go:54
+#, c-format
+msgid "Welcome: %s.\n"
+msgstr ""
+
+#: main.go:58
+#, c-format
+msgid "added %d path\n"
+msgid_plural "added %d paths\n"
+msgstr[0] ""
+msgstr[1] ""
