@@ -21,24 +21,24 @@ msgstr ""
 #: main.go:43
 #, c-format
 msgid "Show messages for lang: %s\n"
-msgstr ""
+msgstr "以 %s 显示信息如下\n"
 
 #: main.go:48
 msgid "Hello, world.\n"
-msgstr ""
+msgstr "世界，您好\n"
 
 #: main.go:52
 msgid "guest"
-msgstr ""
+msgstr "客人"
 
 #: main.go:54
 #, c-format
 msgid "Welcome: %s.\n"
-msgstr ""
+msgstr "欢迎：%s。\n"
 
 #: main.go:58
 #, c-format
 msgid "added %d path\n"
 msgid_plural "added %d paths\n"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "已添加 %d 个路径\n"
+msgstr[1] "已添加 %d 个路径\n"
