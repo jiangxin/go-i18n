@@ -27,6 +27,10 @@ all:: $(PROGRAM)
 $(PROGRAM): $(GO_SOURCES)
 	$(GOBUILD) -o $@
 
+.PHONY: test
+test:
+	make -C test
+
 .PHONY: clean
 clean:
 	rm -f $(PROGRAM)
