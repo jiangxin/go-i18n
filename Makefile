@@ -1,4 +1,5 @@
 PROGRAM = go-i18n
+PKG = github.com/jiangxin/go-i18n
 
 # Include wrappers for gettext utils
 include makefile.i18n
@@ -22,10 +23,13 @@ else
     GOTEST := GO111MODULE=on go test
 endif
 
+LOCALE_DIR ?= po/build/locale
+LDFLAGS := -ldflags "-X $(PKG)/i18n.DefaultLocaleRoot=$(LOCALE_DIR)"
+
 all:: $(PROGRAM)
 
 $(PROGRAM): $(GO_SOURCES)
-	$(GOBUILD) -o $@
+	$(GOBUILD) $(LDFLAGS) -o $@
 
 .PHONY: test
 test:

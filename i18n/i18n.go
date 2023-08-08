@@ -20,24 +20,32 @@ type Locale struct {
 }
 
 var (
-	locales        map[string]*Locale
-	emptyLocale    = Locale{Locale: &gotext.Locale{}}
-	defaultRootDir string
-	defaultDomain  string
-	defaultLang    string
+	locales       map[string]*Locale
+	emptyLocale   = Locale{Locale: &gotext.Locale{}}
+	defaultDomain string
+	defaultLang   string
+
+	// DefaultLocaleRoot is the root dir of locales, usually is
+	// "{Prefix}/share/locale".
+	DefaultLocaleRoot = "/opt/go-i18n/share/locale"
+	localeRoot        string
 )
 
 // Setup rootDir and domain for locale, and will return
 // locale for default language.
 func Setup(rootDir, domain string) *Locale {
-	defaultRootDir = rootDir
+	if rootDir != "" {
+		localeRoot = rootDir
+	} else {
+		localeRoot = DefaultLocaleRoot
+	}
 	defaultDomain = domain
 	return GetLocale("")
 }
 
 // GetLocale returns locale for the specific language.
 func GetLocale(lang string) *Locale {
-	if defaultDomain == "" || defaultRootDir == "" {
+	if defaultDomain == "" || localeRoot == "" {
 		fmt.Fprintln(os.Stderr, "ERROR: has not run i18n.Setup() yet")
 		return &emptyLocale
 	}
@@ -50,7 +58,7 @@ func GetLocale(lang string) *Locale {
 	if l, ok := locales[lang]; ok {
 		return l
 	}
-	l := gotext.NewLocale(defaultRootDir, lang)
+	l := gotext.NewLocale(localeRoot, lang)
 	l.AddDomain(defaultDomain)
 	locales[lang] = &Locale{Locale: l, lang: lang}
 	return locales[lang]

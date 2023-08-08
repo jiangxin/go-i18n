@@ -27,8 +27,9 @@ func main() {
 	case 2:
 		i18nDir = os.Args[1]
 	case 1:
-		i18nDir = "po/build/locale"
-		fmt.Fprintf(os.Stderr, "WARN: use %s as locale root dir\n\n", i18nDir)
+		// Use default i18n locale root dir
+		fmt.Fprintf(os.Stderr, "WARN: use default i18n dir: %s\n\n",
+			i18n.DefaultLocaleRoot)
 	default:
 		usage("too many args provided")
 	}
